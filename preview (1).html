@@ -1,0 +1,1048 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Suspensión y Alineación Interactiva | Centro Don Bosco</title>
+<style>
+:root{
+  --green:#075233;
+  --green2:#0B6B3A;
+  --gold:#D9A441;
+  --bg:#F3F8F5;
+  --ink:#173127;
+  --muted:#5f7269;
+  --card:#ffffff;
+  --line:#dbe7df;
+
+  --static:#97A6A0;
+  --moving:#159E7A;
+  --compression:#E53935;
+  --traction:#1E88E5;
+  --wear:#FB8C00;
+
+  --uca:#8E44AD;       /* upper control arm */
+  --lca:#E53935;       /* lower control arm */
+  --bj:#F6C026;        /* ball joint */
+  --knuckle:#00A6A6;   /* steering knuckle */
+  --shock:#1E88E5;     /* shock absorber */
+  --spring:#43A047;    /* coil spring */
+  --sway:#FF7043;      /* sway bar */
+  --rack:#6D4C41;      /* steering rack */
+  --tierod:#FB8C00;    /* tie rod */
+  --bushing:#607D8B;   /* bushing */
+  --wheel:#263238;     /* wheel */
+}
+*{box-sizing:border-box}
+body{
+  margin:0;
+  font-family:Arial, Helvetica, sans-serif;
+  color:var(--ink);
+  background:
+    radial-gradient(circle at 8% 0%, rgba(217,164,65,.14), transparent 25%),
+    linear-gradient(135deg,#f8fbf9,#eef6f1);
+}
+header{
+  position:sticky;top:0;z-index:30;
+  display:flex;align-items:center;gap:14px;
+  padding:14px 22px;
+  background:rgba(255,255,255,.96);
+  border-bottom:4px solid var(--green2);
+  box-shadow:0 6px 20px rgba(0,0,0,.06);
+}
+.logo{
+  width:50px;height:50px;border-radius:50%;
+  display:grid;place-items:center;
+  background:var(--green2);color:white;font-weight:900;
+  border:4px solid var(--gold);
+}
+.brand strong{display:block;color:var(--green);font-size:15px}
+.brand span{display:block;font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.08em}
+header .actions{margin-left:auto;display:flex;gap:8px}
+.topbtn{
+  border:1px solid #d2e1d8;background:#fff;color:var(--green);
+  border-radius:10px;padding:8px 12px;font-weight:800;cursor:pointer
+}
+main{max-width:1560px;margin:auto;padding:22px}
+.hero{
+  background:#fff;border:1px solid var(--line);border-radius:26px;padding:22px 24px;
+  box-shadow:0 14px 38px rgba(7,82,51,.09)
+}
+.kicker{
+  display:inline-block;background:#e8f3ed;border:1px solid #cde1d5;color:var(--green);
+  border-radius:999px;padding:7px 11px;font-size:12px;font-weight:900;letter-spacing:.08em
+}
+h1{
+  font-size:clamp(34px,5vw,64px);
+  line-height:.97;
+  letter-spacing:-.04em;
+  margin:12px 0 14px;
+  color:var(--green);
+}
+.lead{font-size:19px;line-height:1.52;color:#38554a;max-width:1180px}
+.legend{
+  display:flex;gap:9px;flex-wrap:wrap;margin-top:14px
+}
+.badge{
+  display:flex;align-items:center;gap:8px;padding:8px 10px;border:1px solid #d9e6df;background:#f9fbfa;border-radius:999px;
+  font-size:12px;font-weight:800;color:#244236
+}
+.sw{width:14px;height:14px;border-radius:50%}
+.workspace{
+  margin-top:18px;
+  display:grid;grid-template-columns:1.15fr .85fr;gap:18px
+}
+.canvasCard,.panelCard{
+  background:#fff;border:1px solid var(--line);border-radius:26px;padding:18px;
+  box-shadow:0 15px 38px rgba(7,82,51,.10)
+}
+.controlRow{
+  display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;margin-bottom:12px
+}
+.controlGroup{
+  background:#f8fbf9;border:1px solid #dde9e2;border-radius:18px;padding:12px
+}
+.controlGroup label{
+  display:block;font-size:11px;text-transform:uppercase;letter-spacing:.08em;
+  color:var(--muted);font-weight:900;margin-bottom:7px
+}
+.seg{
+  display:flex;flex-wrap:wrap;gap:6px
+}
+.seg button{
+  border:1px solid #c9ddd0;background:#fff;color:var(--green);border-radius:11px;padding:8px 10px;font-size:12px;font-weight:900;cursor:pointer
+}
+.seg button.active{background:var(--green);color:#fff;border-color:var(--green)}
+input[type=range]{width:100%}
+.speedline{display:flex;align-items:center;gap:9px}
+.speedTag{
+  min-width:52px;text-align:center;font-weight:900;color:var(--green);font-size:12px;
+  background:#fff;border:1px solid #d5e4db;border-radius:999px;padding:7px 8px
+}
+.playbar{
+  display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin:8px 0 12px
+}
+.btn{
+  border:0;background:var(--green2);color:white;border-radius:11px;padding:10px 13px;font-weight:900;cursor:pointer
+}
+.btn.gold{background:var(--gold);color:#3b2c0d}
+.btn.ghost{background:#fff;color:var(--green);border:1px solid #cadfd2}
+.progress{
+  flex:1;min-width:160px;height:10px;background:#e2ebe6;border-radius:999px;overflow:hidden
+}
+.progress div{height:100%;width:0;background:linear-gradient(90deg,var(--green2),var(--gold));transition:.35s}
+.counter{font-size:12px;font-weight:900;color:var(--muted)}
+svg{width:100%;min-height:740px;height:auto;display:block}
+.viz{
+  background:linear-gradient(#fbfdfc,#f3f8f5);
+  border:1px solid #dfe9e2;border-radius:20px;overflow:hidden;position:relative
+}
+.part{
+  opacity:.28;
+  transition:opacity .35s, transform .55s ease, stroke-width .35s, filter .35s;
+}
+.part.hot{
+  opacity:1;
+  filter:drop-shadow(0 0 12px rgba(0,0,0,.18));
+}
+.label{
+  opacity:0;
+  transition:opacity .35s;
+  font-size:15px;font-weight:900;paint-order:stroke;stroke:#fff;stroke-width:5px;stroke-linejoin:round
+}
+.label.show{opacity:1}
+.guide{
+  opacity:0;transition:opacity .35s;
+  stroke:#8ca49b;stroke-width:2;stroke-dasharray:7 5;fill:none
+}
+.guide.show{opacity:1}
+.force{
+  opacity:0;
+  transition:opacity .35s, transform .45s ease;
+  stroke-width:7;fill:none;stroke-linecap:round;
+  stroke-dasharray:14 9;
+  animation:dash 1s linear infinite;
+}
+.force.show{opacity:1}
+@keyframes dash{to{stroke-dashoffset:-46}}
+.hotspot{cursor:pointer}
+.hotspot:hover + .label, .hotspot:hover ~ .labelExtra{opacity:1}
+.modeTag{
+  display:inline-block;background:#edf6f1;border:1px solid #d1e5d8;color:var(--green);
+  border-radius:999px;padding:8px 12px;font-size:12px;font-weight:900
+}
+.statusBox{
+  display:grid;gap:12px
+}
+.card{
+  background:#f9fbfa;border:1px solid #dde8e1;border-radius:18px;padding:16px
+}
+.card h3{margin:0 0 8px;color:var(--green)}
+.card p{margin:0 0 8px;line-height:1.47}
+.small{font-size:13px;color:var(--muted)}
+.bigstate{
+  display:flex;align-items:center;justify-content:space-between;gap:8px;flex-wrap:wrap
+}
+.stateLabel{
+  font-size:28px;font-weight:900;color:var(--green)
+}
+.statePill{
+  padding:8px 12px;border-radius:999px;background:#fff7e7;border:1px solid #ebd4a0;color:#6f5115;font-weight:900
+}
+.table{
+  width:100%;border-collapse:collapse;font-size:13px
+}
+.table th,.table td{padding:8px 7px;border-bottom:1px solid #e1ebe5;text-align:left;vertical-align:top}
+.table th{color:var(--muted);font-size:12px;text-transform:uppercase;letter-spacing:.06em}
+.split{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.note{
+  border-left:5px solid var(--gold);background:#fff7e7;border-radius:0 14px 14px 0;padding:12px 14px;line-height:1.46
+}
+ul.clean{margin:8px 0 0 18px;padding:0}
+.timeline{
+  display:grid;grid-template-columns:repeat(9,1fr);gap:7px;margin-top:12px
+}
+.step{
+  background:#fff;border:1px solid #dce8e0;border-radius:12px;padding:10px 8px;text-align:center;
+  font-size:11px;font-weight:900;color:var(--muted);cursor:pointer
+}
+.step.active{outline:3px solid rgba(217,164,65,.32);color:var(--green);transform:translateY(-2px)}
+.footerTip{
+  margin-top:16px;background:#102e22;color:#fff;border-left:6px solid var(--gold);
+  border-radius:16px;padding:14px 16px;line-height:1.5
+}
+.hoverInfo{
+  position:absolute;right:16px;top:16px;max-width:320px;
+  background:rgba(255,255,255,.96);border:1px solid #d8e5de;border-radius:16px;padding:12px 14px;
+  box-shadow:0 10px 24px rgba(0,0,0,.07);font-size:13px;line-height:1.42
+}
+.hoverInfo b{color:var(--green)}
+@media(max-width:1180px){
+  .workspace{grid-template-columns:1fr}
+}
+@media(max-width:900px){
+  .controlRow{grid-template-columns:1fr 1fr}
+  .timeline{grid-template-columns:repeat(3,1fr)}
+}
+@media(max-width:640px){
+  main{padding:14px}
+  .controlRow,.split{grid-template-columns:1fr}
+  svg{min-height:560px}
+}
+@media print{
+  header .actions,.playbar,.controlRow{display:none}
+}
+</style>
+</head>
+<body>
+<header>
+  <div class="logo">CDB</div>
+  <div class="brand">
+    <strong>INSTITUTO TÉCNICO INDUSTRIAL CENTRO DON BOSCO</strong>
+    <span>Sistema de suspensión y alineación · Visualización interactiva</span>
+  </div>
+  <div class="actions">
+    <button class="topbtn" id="teacherBtn">Notas técnicas</button>
+    <button class="topbtn" id="fullBtn">Pantalla completa</button>
+  </div>
+</header>
+
+<main>
+  <section class="hero">
+    <span class="kicker">ANIMACIÓN EDUCATIVA WEB · PSEUDO-3D / MULTIVISTA</span>
+    <h1>Suspensión y alineación<br>de un vehículo</h1>
+    <p class="lead">
+      Explora la geometría de <b>camber</b>, <b>caster</b> y <b>toe</b> con una vista del vehículo completo y un conjunto delantero detallado.
+      Puedes alternar la <b>perspectiva</b>, reproducir la animación secuencial, pausar, retroceder, controlar la velocidad y ver cómo cambian
+      las fuerzas, el desgaste y la sensación de conducción.
+    </p>
+    <div class="legend">
+      <span class="badge"><span class="sw" style="background:var(--static)"></span>Componentes estáticos</span>
+      <span class="badge"><span class="sw" style="background:var(--moving)"></span>Componentes móviles</span>
+      <span class="badge"><span class="sw" style="background:var(--compression)"></span>Compresión</span>
+      <span class="badge"><span class="sw" style="background:var(--traction)"></span>Tracción / retorno</span>
+      <span class="badge"><span class="sw" style="background:var(--wear)"></span>Desgaste potencial</span>
+      <span class="badge"><span class="sw" style="background:var(--uca)"></span>Upper Control Arm</span>
+      <span class="badge"><span class="sw" style="background:var(--lca)"></span>Lower Control Arm</span>
+      <span class="badge"><span class="sw" style="background:var(--shock)"></span>Shock + Spring</span>
+      <span class="badge"><span class="sw" style="background:var(--tierod)"></span>Tie Rod</span>
+    </div>
+  </section>
+
+  <section class="workspace">
+    <div class="canvasCard">
+      <div class="controlRow">
+        <div class="controlGroup">
+          <label>Parámetro</label>
+          <div class="seg" id="paramSeg">
+            <button data-param="camber" class="active">Camber</button>
+            <button data-param="caster">Caster</button>
+            <button data-param="toe">Toe</button>
+          </div>
+        </div>
+        <div class="controlGroup">
+          <label>Estado angular</label>
+          <div class="seg" id="stateSeg">
+            <button data-state="negative">Negativo</button>
+            <button data-state="zero" class="active">Cero</button>
+            <button data-state="positive">Positivo</button>
+          </div>
+        </div>
+        <div class="controlGroup">
+          <label>Vista</label>
+          <div class="seg" id="viewSeg">
+            <button data-view="isometric" class="active">Isométrica</button>
+            <button data-view="front">Frontal</button>
+            <button data-view="side">Lateral</button>
+            <button data-view="top">Superior</button>
+          </div>
+        </div>
+        <div class="controlGroup">
+          <label>Velocidad</label>
+          <div class="speedline">
+            <input id="speed" type="range" min="0.6" max="2" step="0.1" value="1">
+            <div class="speedTag"><span id="speedTag">1.0x</span></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="playbar">
+        <button class="btn ghost" id="prevBtn">← Retroceder</button>
+        <button class="btn" id="playBtn">▶ Reproducir</button>
+        <button class="btn gold" id="pauseBtn">❚❚ Pausar</button>
+        <button class="btn ghost" id="nextBtn">Avanzar →</button>
+        <div class="progress"><div id="progressFill"></div></div>
+        <div class="counter" id="counter">1 / 9</div>
+      </div>
+
+      <div class="viz">
+        <div class="hoverInfo" id="hoverInfo"><b>Consejo:</b> pasa el cursor sobre una pieza para ver su nombre técnico en español e inglés.</div>
+
+        <svg id="svg" viewBox="0 0 1200 820" aria-label="Visualización del sistema de suspensión y alineación">
+          <defs>
+            <marker id="arrRed" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto">
+              <path d="M0,0 L0,6 L9,3 z" fill="var(--compression)"/>
+            </marker>
+            <marker id="arrBlue" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto">
+              <path d="M0,0 L0,6 L9,3 z" fill="var(--traction)"/>
+            </marker>
+            <marker id="arrWear" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto">
+              <path d="M0,0 L0,6 L9,3 z" fill="var(--wear)"/>
+            </marker>
+          </defs>
+
+          <!-- Wireframe car body -->
+          <g id="carIso">
+            <path d="M140 520 Q185 420 340 380 L820 380 Q920 384 1018 460 L1080 525"
+                  fill="none" stroke="#d9e4de" stroke-width="10" stroke-linecap="round"/>
+            <path d="M205 525 L1020 525" stroke="#dce7e1" stroke-width="8"/>
+            <path d="M245 377 L320 285 L770 285 L872 375" fill="none" stroke="#e2ebe6" stroke-width="7" stroke-linecap="round"/>
+            <path d="M390 285 L390 375 M650 285 L650 380" stroke="#e4ede8" stroke-width="4"/>
+            <ellipse cx="332" cy="570" rx="95" ry="98" fill="none" stroke="#dbe6e0" stroke-width="6"/>
+            <ellipse cx="882" cy="570" rx="95" ry="98" fill="none" stroke="#dbe6e0" stroke-width="6"/>
+          </g>
+
+          <!-- Alternate guide frames -->
+          <g id="frontGuide" opacity="0">
+            <line x1="595" y1="140" x2="595" y2="760" stroke="#d0dbd5" stroke-width="3" stroke-dasharray="10 8"/>
+            <line x1="285" y1="710" x2="905" y2="710" stroke="#d0dbd5" stroke-width="3"/>
+            <text x="617" y="162" fill="#7a8e85" class="label show" style="opacity:.7">VISTA FRONTAL</text>
+          </g>
+          <g id="sideGuide" opacity="0">
+            <line x1="250" y1="710" x2="935" y2="710" stroke="#d0dbd5" stroke-width="3"/>
+            <text x="265" y="165" fill="#7a8e85" class="label show" style="opacity:.7">VISTA LATERAL</text>
+          </g>
+          <g id="topGuide" opacity="0">
+            <rect x="280" y="190" width="640" height="405" rx="24" fill="none" stroke="#d0dbd5" stroke-width="3" stroke-dasharray="10 7"/>
+            <text x="302" y="218" fill="#7a8e85" class="label show" style="opacity:.7">VISTA SUPERIOR</text>
+          </g>
+
+          <!-- Detailed suspension assembly front-left-ish -->
+          <g id="assembly">
+            <!-- chassis points / bushings -->
+            <g class="part hot staticPart">
+              <circle id="bushingU1" class="hotspot" cx="450" cy="255" r="16" fill="none" stroke="var(--bushing)" stroke-width="10"/>
+              <circle id="bushingU2" class="hotspot" cx="555" cy="255" r="16" fill="none" stroke="var(--bushing)" stroke-width="10"/>
+              <circle id="bushingL1" class="hotspot" cx="430" cy="495" r="17" fill="none" stroke="var(--bushing)" stroke-width="10"/>
+              <circle id="bushingL2" class="hotspot" cx="570" cy="495" r="17" fill="none" stroke="var(--bushing)" stroke-width="10"/>
+            </g>
+            <text id="lab-bushingU1" class="label" x="290" y="240" fill="var(--bushing)">BUJE / BUSHING</text>
+            <path id="guide-bushingU1" class="guide" d="M445 255 L360 240"/>
+            <text id="lab-bushingL1" class="label" x="280" y="520" fill="var(--bushing)">BUJE / BUSHING</text>
+            <path id="guide-bushingL1" class="guide" d="M425 495 L350 515"/>
+
+            <!-- Upper control arm -->
+            <g id="ucaGroup" class="part hotspot">
+              <path id="uca" d="M450 255 L525 292 L610 280" fill="none" stroke="var(--uca)" stroke-width="18" stroke-linecap="round" stroke-linejoin="round"/>
+            </g>
+            <text id="lab-uca" class="label" x="255" y="188" fill="var(--uca)">BRAZO DE CONTROL SUPERIOR / UPPER CONTROL ARM</text>
+            <path id="guide-uca" class="guide" d="M486 274 L350 198"/>
+
+            <!-- Lower control arm -->
+            <g id="lcaGroup" class="part hotspot">
+              <path id="lca" d="M430 495 L525 455 L630 475" fill="none" stroke="var(--lca)" stroke-width="20" stroke-linecap="round" stroke-linejoin="round"/>
+            </g>
+            <text id="lab-lca" class="label" x="245" y="602" fill="var(--lca)">BRAZO DE CONTROL INFERIOR / LOWER CONTROL ARM</text>
+            <path id="guide-lca" class="guide" d="M505 465 L352 590"/>
+
+            <!-- spring -->
+            <g id="springGroup" class="part hotspot">
+              <path id="spring" d="M508 300
+               C478 320 548 340 512 360
+               C480 380 550 400 515 420
+               C485 438 545 458 515 485" fill="none" stroke="var(--spring)" stroke-width="14" stroke-linecap="round"/>
+            </g>
+            <text id="lab-spring" class="label" x="190" y="340" fill="var(--spring)">MUELLE / COIL SPRING</text>
+            <path id="guide-spring" class="guide" d="M495 355 L312 340"/>
+
+            <!-- shock absorber -->
+            <g id="shockGroup" class="part hotspot">
+              <line id="shock" x1="560" y1="255" x2="540" y2="470" stroke="var(--shock)" stroke-width="18" stroke-linecap="round"/>
+            </g>
+            <text id="lab-shock" class="label" x="830" y="250" fill="var(--shock)">AMORTIGUADOR / SHOCK ABSORBER</text>
+            <path id="guide-shock" class="guide" d="M552 295 L820 260"/>
+
+            <!-- sway bar -->
+            <g id="swayGroup" class="part hotspot">
+              <path id="sway" d="M285 530 C378 520 408 510 430 495 M570 495 C640 472 770 455 895 460" fill="none" stroke="var(--sway)" stroke-width="12" stroke-linecap="round"/>
+            </g>
+            <text id="lab-sway" class="label" x="738" y="445" fill="var(--sway)">BARRA ESTABILIZADORA / SWAY BAR</text>
+            <path id="guide-sway" class="guide" d="M725 445 L612 485"/>
+
+            <!-- steering rack -->
+            <g id="rackGroup" class="part hotspot">
+              <rect id="rack" x="335" y="555" width="240" height="44" rx="16" fill="none" stroke="var(--rack)" stroke-width="12"/>
+            </g>
+            <text id="lab-rack" class="label" x="215" y="652" fill="var(--rack)">CREMALLERA DE DIRECCIÓN / STEERING RACK</text>
+            <path id="guide-rack" class="guide" d="M420 598 L360 640"/>
+
+            <!-- tie rod -->
+            <g id="tieGroup" class="part hotspot">
+              <line id="tierod" x1="575" y1="575" x2="702" y2="540" stroke="var(--tierod)" stroke-width="14" stroke-linecap="round"/>
+            </g>
+            <text id="lab-tierod" class="label" x="720" y="600" fill="var(--tierod)">BIELETA / TIE ROD</text>
+            <path id="guide-tierod" class="guide" d="M690 542 L724 588"/>
+
+            <!-- ball joints -->
+            <g id="ballGroup" class="part hotspot">
+              <circle id="bjUpper" cx="616" cy="282" r="18" fill="none" stroke="var(--bj)" stroke-width="12"/>
+              <circle id="bjLower" cx="635" cy="475" r="18" fill="none" stroke="var(--bj)" stroke-width="12"/>
+            </g>
+            <text id="lab-ball" class="label" x="760" y="370" fill="#9B7400">RÓTULAS / BALL JOINTS</text>
+            <path id="guide-ball" class="guide" d="M654 376 L760 376"/>
+
+            <!-- knuckle -->
+            <g id="knuckleGroup" class="part hotspot">
+              <path id="knuckle" d="M616 282 C720 322 715 395 635 475" fill="none" stroke="var(--knuckle)" stroke-width="18" stroke-linecap="round"/>
+            </g>
+            <text id="lab-knuckle" class="label" x="755" y="318" fill="var(--knuckle)">MANGUETA / STEERING KNUCKLE</text>
+            <path id="guide-knuckle" class="guide" d="M718 350 L760 330"/>
+
+            <!-- wheel and tire -->
+            <g id="wheelGroup" class="part hotspot">
+              <ellipse id="wheelOuter" cx="780" cy="412" rx="96" ry="155" fill="none" stroke="var(--wheel)" stroke-width="22"/>
+              <ellipse id="wheelInner" cx="780" cy="412" rx="35" ry="54" fill="none" stroke="var(--wheel)" stroke-width="12"/>
+            </g>
+            <text id="lab-wheel" class="label" x="875" y="414" fill="var(--wheel)">RUEDA / WHEEL + TIRE</text>
+            <path id="guide-wheel" class="guide" d="M870 410 L826 410"/>
+
+            <!-- wheel contact patch highlight -->
+            <g id="contactPatch" class="part">
+              <ellipse id="patch" cx="780" cy="560" rx="56" ry="11" fill="rgba(251,140,0,.24)" stroke="var(--wear)" stroke-width="6"/>
+            </g>
+
+            <!-- wear zones on wheel -->
+            <g id="wearMarks" opacity="0">
+              <path id="wearLeft" d="M706 330 C695 350 692 480 708 500" stroke="var(--wear)" stroke-width="11" fill="none" stroke-linecap="round"/>
+              <path id="wearRight" d="M855 330 C867 352 870 482 853 500" stroke="var(--wear)" stroke-width="11" fill="none" stroke-linecap="round"/>
+              <path id="wearCenter" d="M780 305 C780 355 780 460 780 516" stroke="var(--wear)" stroke-width="11" fill="none" stroke-linecap="round"/>
+            </g>
+          </g>
+
+          <!-- TOP VIEW wheels -->
+          <g id="topWheels" opacity="0">
+            <rect id="topLeftWheel" x="370" y="255" width="58" height="180" rx="24" fill="none" stroke="var(--wheel)" stroke-width="20"/>
+            <rect id="topRightWheel" x="770" y="255" width="58" height="180" rx="24" fill="none" stroke="var(--wheel)" stroke-width="20"/>
+            <rect x="525" y="320" width="150" height="45" rx="14" fill="none" stroke="var(--rack)" stroke-width="12"/>
+            <line id="topTieLeft" x1="525" y1="342" x2="430" y2="345" stroke="var(--tierod)" stroke-width="14" stroke-linecap="round"/>
+            <line id="topTieRight" x1="675" y1="342" x2="770" y2="345" stroke="var(--tierod)" stroke-width="14" stroke-linecap="round"/>
+            <text x="490" y="300" class="label show" style="opacity:.65" fill="var(--rack)">STEERING RACK + TIE RODS</text>
+            <text x="310" y="515" class="label show" style="opacity:.7" fill="var(--wheel)">TOP VIEW</text>
+          </g>
+
+          <!-- SIDE VIEW assembly -->
+          <g id="sideSet" opacity="0">
+            <circle id="sideWheel" cx="790" cy="460" r="128" fill="none" stroke="var(--wheel)" stroke-width="22"/>
+            <circle cx="790" cy="460" r="44" fill="none" stroke="var(--wheel)" stroke-width="10"/>
+            <line id="sideAxis" x1="675" y1="230" x2="730" y2="478" stroke="var(--shock)" stroke-width="16" stroke-linecap="round"/>
+            <circle cx="675" cy="230" r="18" fill="var(--bj)"/>
+            <circle cx="730" cy="478" r="18" fill="var(--bj)"/>
+            <path d="M730 478 L585 516 L532 470" fill="none" stroke="var(--lca)" stroke-width="18" stroke-linecap="round" stroke-linejoin="round"/>
+            <path d="M675 230 L595 284 L550 255" fill="none" stroke="var(--uca)" stroke-width="15" stroke-linecap="round" stroke-linejoin="round"/>
+            <path d="M635 270
+                     C610 295 660 315 630 340
+                     C600 365 665 385 630 410
+                     C606 428 650 448 628 470" fill="none" stroke="var(--spring)" stroke-width="13" stroke-linecap="round"/>
+            <path d="M730 478 C764 430 775 380 790 332" fill="none" stroke="var(--knuckle)" stroke-width="16" stroke-linecap="round"/>
+          </g>
+
+          <!-- FORCE vectors -->
+          <path id="fComp1" class="force" d="M518 310 L518 465" stroke="var(--compression)" marker-end="url(#arrRed)"/>
+          <path id="fComp2" class="force" d="M790 300 L790 540" stroke="var(--compression)" marker-end="url(#arrRed)"/>
+          <path id="fTrac1" class="force" d="M690 540 L590 575" stroke="var(--traction)" marker-end="url(#arrBlue)"/>
+          <path id="fWear1" class="force" d="M895 380 L845 380" stroke="var(--wear)" marker-end="url(#arrWear)"/>
+          <path id="fWear2" class="force" d="M665 380 L715 380" stroke="var(--wear)" marker-end="url(#arrWear)"/>
+          <path id="fTopL" class="force" d="M430 220 L430 170" stroke="var(--wear)" marker-end="url(#arrWear)"/>
+          <path id="fTopR" class="force" d="M770 220 L770 170" stroke="var(--wear)" marker-end="url(#arrWear)"/>
+        </svg>
+      </div>
+
+      <div class="timeline" id="timeline"></div>
+    </div>
+
+    <aside class="panelCard">
+      <div class="statusBox">
+        <div class="bigstate">
+          <div>
+            <span class="modeTag" id="modeTag">Parámetro: Camber</span>
+            <div class="stateLabel" id="stateLabel">Cero</div>
+          </div>
+          <div class="statePill" id="viewTag">Vista: Isométrica</div>
+        </div>
+
+        <div class="card">
+          <h3>¿Qué se está viendo?</h3>
+          <p id="desc">Camber es la inclinación de la rueda respecto a la vertical cuando se observa el vehículo de frente.</p>
+          <p class="small" id="movement">La rueda cambia su inclinación; cambian el apoyo del neumático, la carga sobre el rodamiento y la distribución de fuerzas en los brazos y rótulas.</p>
+        </div>
+
+        <div class="split">
+          <div class="card">
+            <h3>Componentes activos</h3>
+            <div id="activeList"></div>
+          </div>
+          <div class="card">
+            <h3>Consecuencia visible</h3>
+            <p id="consequence"></p>
+          </div>
+        </div>
+
+        <div class="card">
+          <h3>Sensación reportada por el conductor</h3>
+          <p id="driverFeel"></p>
+        </div>
+
+        <div class="card">
+          <h3>Especificaciones típicas</h3>
+          <table class="table">
+            <thead><tr><th>Parámetro</th><th>Rango de referencia*</th><th>Lectura común</th></tr></thead>
+            <tbody>
+              <tr><td>Camber</td><td>-1.0° a +0.5°</td><td>grados (°)</td></tr>
+              <tr><td>Caster</td><td>+2.0° a +7.0°</td><td>grados (°)</td></tr>
+              <tr><td>Toe total</td><td>0 a +3 mm o ±0.20°</td><td>mm o grados</td></tr>
+            </tbody>
+          </table>
+          <p class="small">*Valores genéricos educativos. En práctica real varían según fabricante, suspensión, carga y modelo del vehículo.</p>
+        </div>
+
+        <div class="card">
+          <h3>Notas técnicas</h3>
+          <div class="note" id="techNote">
+            En esta configuración de referencia se busca estabilidad, contacto uniforme del neumático y baja tendencia al desgaste irregular.
+          </div>
+        </div>
+
+        <div class="footerTip">
+          <b>Interpretación rápida:</b><br>
+          <b>Camber</b> responde a “¿la rueda está inclinada?” ·
+          <b>Caster</b> responde a “¿cómo está inclinado el eje de pivote?” ·
+          <b>Toe</b> responde a “¿las ruedas apuntan hacia dentro o hacia fuera?”
+        </div>
+      </div>
+    </aside>
+  </section>
+</main>
+
+<script>
+const config = {
+  param:'camber',
+  state:'zero',
+  view:'isometric',
+  stepIndex:4,
+  playing:false,
+  speed:1,
+  timer:null,
+  teacher:false
+};
+
+const states = ['negative','zero','positive'];
+const params = ['camber','caster','toe'];
+const timeline = [
+  {param:'camber', state:'negative', view:'front'},
+  {param:'camber', state:'zero', view:'front'},
+  {param:'camber', state:'positive', view:'front'},
+  {param:'caster', state:'negative', view:'side'},
+  {param:'caster', state:'zero', view:'side'},
+  {param:'caster', state:'positive', view:'side'},
+  {param:'toe', state:'negative', view:'top'},
+  {param:'toe', state:'zero', view:'top'},
+  {param:'toe', state:'positive', view:'top'}
+];
+
+const descriptions = {
+  camber:{
+    base:'Camber es la inclinación de la rueda respecto a la vertical cuando se observa el vehículo de frente.',
+    zero:'La rueda queda prácticamente vertical. El parche de contacto es más uniforme y la carga se reparte mejor.',
+    positive:'La parte superior de la rueda se inclina hacia afuera. Se reduce el apoyo del borde interior y aumenta la carga hacia el borde exterior.',
+    negative:'La parte superior de la rueda se inclina hacia adentro. Aumenta la carga hacia el borde interior del neumático.'
+  },
+  caster:{
+    base:'Caster es la inclinación del eje de pivote de la dirección visto lateralmente.',
+    zero:'Sin inclinación apreciable del eje, el retorno a centro se reduce y la estabilidad resulta neutra.',
+    positive:'La parte superior del eje se inclina hacia atrás. Mejora el autocentrado y la estabilidad direccional.',
+    negative:'La parte superior del eje se inclina hacia adelante. Disminuye el autocentrado y puede dar sensación de nerviosismo.'
+  },
+  toe:{
+    base:'Toe describe la convergencia o divergencia de las ruedas vistas desde arriba.',
+    zero:'Las ruedas apuntan prácticamente paralelas. Reduce arrastre lateral y ayuda a un desgaste más uniforme.',
+    positive:'Convergencia (toe-in): las puntas delanteras de las ruedas se acercan. Cambia la tensión de las bieletas y puede modificar el comportamiento en línea recta.',
+    negative:'Divergencia (toe-out): las puntas delanteras se abren. Puede aumentar la respuesta inicial, pero también el desgaste irregular y la inestabilidad.'
+  }
+};
+
+const consequences = {
+  camber:{
+    negative:'Mayor desgaste del borde interior de la banda de rodadura. Mayor carga radial sobre conjunto de rueda y posibilidad de deriva lateral si el desbalance entre lados es importante.',
+    zero:'Desgaste más uniforme, mejor distribución de la carga y comportamiento predecible en conducción normal.',
+    positive:'Mayor desgaste del borde exterior del neumático. Puede afectar el contacto efectivo y aumentar esfuerzos laterales en la suspensión.'
+  },
+  caster:{
+    negative:'Menor retorno del volante al centro, dirección más liviana pero menos estable a velocidad alta. Un caster desigual puede provocar tironeo.',
+    zero:'Sensación neutra; menos ayuda al autocentrado que un caster positivo moderado.',
+    positive:'Mayor estabilidad en línea recta y mejor autocentrado, aunque puede sentirse una dirección más “pesada” en maniobras lentas.'
+  },
+  toe:{
+    negative:'Divergencia: puede producir desgaste tipo serrucho (feathering), nerviosismo en línea recta y sensibilidad excesiva.',
+    zero:'Arrastre lateral reducido, menor tendencia a feathering y trayectoria más limpia.',
+    positive:'Convergencia: puede ayudar a estabilidad en algunos diseños, pero si es excesiva genera arrastre, consumo y desgaste irregular.'
+  }
+};
+
+const driverFeel = {
+  camber:{
+    negative:'“Siento que el vehículo tiende a cargar de un lado y las llantas se gastan por dentro.”',
+    zero:'“La dirección se siente normal y el desgaste de las llantas es parejo.”',
+    positive:'“Parece que las llantas se gastan por fuera y el apoyo no es uniforme en curvas o frenadas.”'
+  },
+  caster:{
+    negative:'“El volante no regresa bien al centro y el carro se siente nervioso o inestable.”',
+    zero:'“No se siente tan firme a alta velocidad; el retorno del volante es moderado.”',
+    positive:'“Se siente más estable en recta y el volante vuelve al centro con más facilidad.”'
+  },
+  toe:{
+    negative:'“El carro entra rápido al giro, pero se siente inquieto y las llantas pueden serrucharse.”',
+    zero:'“Mantiene bien la línea y no arrastra lateralmente.”',
+    positive:'“Puede sentirse arrastre y desgaste irregular; en algunos casos parece pesado o reacio a rodar libremente.”'
+  }
+};
+
+const notes = {
+  camber:{
+    negative:'La fuerza de compresión se concentra más hacia el lado interno del contacto del neumático. También cambian el brazo de palanca y la carga de rodamientos.',
+    zero:'El parche de contacto está más equilibrado. Es la referencia educativa para comprender la distribución uniforme.',
+    positive:'La fuerza se desplaza hacia el borde externo del neumático. Esto aumenta el desgaste exterior y altera la distribución de esfuerzos.'
+  },
+  caster:{
+    negative:'El eje de pivote adelantado reduce el efecto carrito/autocentrado. La dirección puede sentirse demasiado ligera e inestable.',
+    zero:'Con un pivote neutro el autocentrado es limitado. Muchos vehículos reales usan caster positivo, no cero absoluto.',
+    positive:'El pivote inclinado hacia atrás crea un efecto de seguimiento: la rueda “quiere” alinearse con la marcha.'
+  },
+  toe:{
+    negative:'La divergencia aumenta el “raspado” lateral en la banda de rodadura y eleva la posibilidad de feathering.',
+    zero:'La referencia paralela minimiza arrastre lateral y facilita un desgaste más limpio.',
+    positive:'La convergencia excesiva también arrastra la banda de rodadura y sobrecarga bieletas y unión con la cremallera.'
+  }
+};
+
+const activeComponents = {
+  camber:['Rueda / Wheel', 'Mangueta / Steering Knuckle', 'Brazo superior / Upper Control Arm', 'Brazo inferior / Lower Control Arm', 'Rótulas / Ball Joints', 'Amortiguador / Shock', 'Muelle / Coil Spring'],
+  caster:['Eje de pivote (entre rótula superior e inferior / strut mount y rótula) ', 'Rueda / Wheel', 'Mangueta / Steering Knuckle', 'Brazos de control', 'Muelle y amortiguador'],
+  toe:['Cremallera / Steering Rack', 'Bieletas / Tie Rods', 'Mangueta / Steering Knuckle', 'Ruedas delantera izquierda y derecha']
+};
+
+const els = {
+  modeTag: document.getElementById('modeTag'),
+  stateLabel: document.getElementById('stateLabel'),
+  viewTag: document.getElementById('viewTag'),
+  desc: document.getElementById('desc'),
+  movement: document.getElementById('movement'),
+  activeList: document.getElementById('activeList'),
+  consequence: document.getElementById('consequence'),
+  driverFeel: document.getElementById('driverFeel'),
+  techNote: document.getElementById('techNote'),
+  progressFill: document.getElementById('progressFill'),
+  counter: document.getElementById('counter'),
+  hoverInfo: document.getElementById('hoverInfo'),
+  speedTag: document.getElementById('speedTag')
+};
+
+function capitalize(s){
+  return s==='zero' ? 'Cero' : s==='positive' ? 'Positivo' : 'Negativo';
+}
+function prettyParam(p){
+  return p==='camber' ? 'Camber' : p==='caster' ? 'Caster' : 'Toe';
+}
+function prettyView(v){
+  return v==='front' ? 'Frontal' : v==='side' ? 'Lateral' : v==='top' ? 'Superior' : 'Isométrica';
+}
+
+function setActiveButtons(groupId, key, value){
+  document.querySelectorAll(`#${groupId} button`).forEach(b=>b.classList.toggle('active', b.dataset[key]===value));
+}
+function resetHighlights(){
+  document.querySelectorAll('.part').forEach(el=>el.classList.remove('hot'));
+  document.querySelectorAll('.label').forEach(el=>el.classList.remove('show'));
+  document.querySelectorAll('.guide').forEach(el=>el.classList.remove('show'));
+  document.querySelectorAll('.force').forEach(el=>el.classList.remove('show'));
+
+  // reset opacities/transforms
+  const wheel = document.getElementById('wheelGroup');
+  const uca = document.getElementById('ucaGroup');
+  const lca = document.getElementById('lcaGroup');
+  const knuckle = document.getElementById('knuckleGroup');
+  const shock = document.getElementById('shockGroup');
+  const spring = document.getElementById('springGroup');
+  const tierod = document.getElementById('tieGroup');
+  const patch = document.getElementById('patch');
+  const wearMarks = document.getElementById('wearMarks');
+  const topLeftWheel = document.getElementById('topLeftWheel');
+  const topRightWheel = document.getElementById('topRightWheel');
+  const topWheels = document.getElementById('topWheels');
+  const sideSet = document.getElementById('sideSet');
+  const sideAxis = document.getElementById('sideAxis');
+  const frontGuide = document.getElementById('frontGuide');
+  const sideGuide = document.getElementById('sideGuide');
+  const topGuide = document.getElementById('topGuide');
+  const carIso = document.getElementById('carIso');
+  const assembly = document.getElementById('assembly');
+
+  wheel.style.transform='translate(0px,0px) rotate(0deg)';
+  knuckle.style.transform='translate(0px,0px) rotate(0deg)';
+  tierod.style.transform='translate(0px,0px)';
+  shock.style.transform='translate(0px,0px) rotate(0deg)';
+  spring.style.transform='translate(0px,0px) scaleY(1)';
+  uca.style.transform='translate(0px,0px) rotate(0deg)';
+  lca.style.transform='translate(0px,0px) rotate(0deg)';
+  patch.setAttribute('rx','56');
+  patch.setAttribute('cx','780');
+  wearMarks.setAttribute('opacity','0');
+  topLeftWheel.style.transform='rotate(0deg)';
+  topRightWheel.style.transform='rotate(0deg)';
+  topWheels.setAttribute('opacity','0');
+  sideSet.setAttribute('opacity','0');
+  frontGuide.setAttribute('opacity','0');
+  sideGuide.setAttribute('opacity','0');
+  topGuide.setAttribute('opacity','0');
+  carIso.setAttribute('opacity','1');
+  assembly.setAttribute('opacity','1');
+}
+function showLabels(ids){
+  ids.forEach(id=>{
+    const l = document.getElementById('lab-'+id);
+    const g = document.getElementById('guide-'+id);
+    if(l) l.classList.add('show');
+    if(g) g.classList.add('show');
+  });
+}
+function highlight(ids){
+  ids.forEach(id=>{
+    const el=document.getElementById(id+'Group') || document.getElementById(id);
+    if(el) el.classList.add('hot');
+  });
+}
+function updateView(){
+  const carIso = document.getElementById('carIso');
+  const frontGuide = document.getElementById('frontGuide');
+  const sideGuide = document.getElementById('sideGuide');
+  const topGuide = document.getElementById('topGuide');
+  const topWheels = document.getElementById('topWheels');
+  const sideSet = document.getElementById('sideSet');
+  const assembly = document.getElementById('assembly');
+
+  if(config.view==='isometric'){
+    carIso.setAttribute('opacity','1');
+    assembly.setAttribute('opacity','1');
+  }
+  if(config.view==='front'){
+    frontGuide.setAttribute('opacity','1');
+    carIso.setAttribute('opacity','.18');
+  }
+  if(config.view==='side'){
+    sideGuide.setAttribute('opacity','1');
+    carIso.setAttribute('opacity','.15');
+    sideSet.setAttribute('opacity','1');
+    assembly.setAttribute('opacity','0');
+  }
+  if(config.view==='top'){
+    topGuide.setAttribute('opacity','1');
+    carIso.setAttribute('opacity','.12');
+    assembly.setAttribute('opacity','0');
+    topWheels.setAttribute('opacity','1');
+  }
+}
+function applyCamber(){
+  highlight(['wheel','knuckle','uca','lca','ball','shock','spring']);
+  showLabels(['wheel','knuckle','uca','lca','ball','shock','spring']);
+  document.getElementById('fComp1').classList.add('show');
+  document.getElementById('fComp2').classList.add('show');
+
+  const wheel = document.getElementById('wheelGroup');
+  const knuckle = document.getElementById('knuckleGroup');
+  const uca = document.getElementById('ucaGroup');
+  const lca = document.getElementById('lcaGroup');
+  const shock = document.getElementById('shockGroup');
+  const spring = document.getElementById('springGroup');
+  const patch = document.getElementById('patch');
+  const wear = document.getElementById('wearMarks');
+
+  if(config.state==='negative'){
+    wheel.style.transform='rotate(-7deg)';
+    knuckle.style.transform='rotate(-4deg)';
+    uca.style.transform='translate(4px,-6px)';
+    lca.style.transform='translate(-6px,4px)';
+    shock.style.transform='rotate(-2deg)';
+    spring.style.transform='scaleY(1.02)';
+    patch.setAttribute('cx','755');
+    patch.setAttribute('rx','42');
+    wear.setAttribute('opacity','1');
+    document.getElementById('wearLeft').style.opacity='1';
+    document.getElementById('wearRight').style.opacity='0.15';
+    document.getElementById('wearCenter').style.opacity='0.1';
+    document.getElementById('fWear2').classList.add('show');
+  } else if(config.state==='positive'){
+    wheel.style.transform='rotate(7deg)';
+    knuckle.style.transform='rotate(4deg)';
+    uca.style.transform='translate(-4px,-6px)';
+    lca.style.transform='translate(6px,4px)';
+    shock.style.transform='rotate(2deg)';
+    spring.style.transform='scaleY(1.02)';
+    patch.setAttribute('cx','805');
+    patch.setAttribute('rx','42');
+    wear.setAttribute('opacity','1');
+    document.getElementById('wearRight').style.opacity='1';
+    document.getElementById('wearLeft').style.opacity='0.15';
+    document.getElementById('wearCenter').style.opacity='0.1';
+    document.getElementById('fWear1').classList.add('show');
+  } else {
+    patch.setAttribute('cx','780');
+    patch.setAttribute('rx','56');
+    wear.setAttribute('opacity','1');
+    document.getElementById('wearCenter').style.opacity='0.85';
+    document.getElementById('wearLeft').style.opacity='0.25';
+    document.getElementById('wearRight').style.opacity='0.25';
+  }
+}
+function applyCaster(){
+  highlight(['shock','spring']);
+  showLabels(['wheel','knuckle','uca','lca','shock','spring','ball']);
+  document.getElementById('sideSet').setAttribute('opacity','1');
+  document.getElementById('fComp2').classList.add('show');
+  document.getElementById('fTrac1').classList.add('show');
+
+  const axis = document.getElementById('sideAxis');
+  const wheel = document.getElementById('sideWheel');
+  if(config.state==='negative'){
+    axis.style.transform='rotate(8deg)';
+    axis.style.transformOrigin='730px 478px';
+    wheel.style.transform='translate(-8px,0)';
+    wheel.style.transformOrigin='790px 460px';
+  } else if(config.state==='positive'){
+    axis.style.transform='rotate(-9deg)';
+    axis.style.transformOrigin='730px 478px';
+    wheel.style.transform='translate(12px,0)';
+    wheel.style.transformOrigin='790px 460px';
+  } else {
+    axis.style.transform='rotate(0deg)';
+    wheel.style.transform='translate(0px,0)';
+  }
+}
+function applyToe(){
+  document.getElementById('topWheels').setAttribute('opacity','1');
+  document.getElementById('fTopL').classList.add('show');
+  document.getElementById('fTopR').classList.add('show');
+  document.getElementById('fTrac1').classList.add('show');
+  // display top labels implicitly in group
+
+  const l = document.getElementById('topLeftWheel');
+  const r = document.getElementById('topRightWheel');
+  const tl = document.getElementById('topTieLeft');
+  const tr = document.getElementById('topTieRight');
+  if(config.state==='negative'){ // toe-out
+    l.style.transform='rotate(-7deg)';
+    r.style.transform='rotate(7deg)';
+    l.style.transformOrigin='399px 345px';
+    r.style.transformOrigin='799px 345px';
+    tl.style.transform='translate(-10px,0)';
+    tr.style.transform='translate(10px,0)';
+  } else if(config.state==='positive'){ // toe-in
+    l.style.transform='rotate(7deg)';
+    r.style.transform='rotate(-7deg)';
+    l.style.transformOrigin='399px 345px';
+    r.style.transformOrigin='799px 345px';
+    tl.style.transform='translate(8px,0)';
+    tr.style.transform='translate(-8px,0)';
+  } else {
+    l.style.transform='rotate(0deg)';
+    r.style.transform='rotate(0deg)';
+    tl.style.transform='translate(0px,0)';
+    tr.style.transform='translate(0px,0)';
+  }
+}
+function updateText(){
+  els.modeTag.textContent='Parámetro: '+prettyParam(config.param);
+  els.stateLabel.textContent=capitalize(config.state);
+  els.viewTag.textContent='Vista: '+prettyView(config.view);
+  els.desc.textContent=descriptions[config.param].base;
+  els.movement.textContent=descriptions[config.param][config.state];
+  els.consequence.textContent=consequences[config.param][config.state];
+  els.driverFeel.textContent=driverFeel[config.param][config.state];
+  els.techNote.textContent=notes[config.param][config.state];
+  els.activeList.innerHTML = '<ul class="clean">'+activeComponents[config.param].map(x=>'<li>'+x+'</li>').join('')+'</ul>';
+
+  const idx = timeline.findIndex(s => s.param===config.param && s.state===config.state);
+  config.stepIndex = idx>=0 ? idx : 0;
+  els.progressFill.style.width = ((config.stepIndex+1)/timeline.length*100)+'%';
+  els.counter.textContent = (config.stepIndex+1)+' / '+timeline.length;
+  document.querySelectorAll('.step').forEach((st,i)=>st.classList.toggle('active', i===config.stepIndex));
+}
+function enforceRecommendedView(){
+  // If user is on specific parameter and non-sensible view, keep chosen view except when playing timeline.
+}
+function render(){
+  resetHighlights();
+  setActiveButtons('paramSeg','param',config.param);
+  setActiveButtons('stateSeg','state',config.state);
+  setActiveButtons('viewSeg','view',config.view);
+  updateView();
+  if(config.param==='camber') applyCamber();
+  if(config.param==='caster') applyCaster();
+  if(config.param==='toe') applyToe();
+  updateText();
+}
+function setScene(param, state, view){
+  config.param = param;
+  config.state = state;
+  config.view = view;
+  render();
+}
+function nextTimeline(){
+  config.stepIndex = (config.stepIndex+1)%timeline.length;
+  const s = timeline[config.stepIndex];
+  setScene(s.param,s.state,s.view);
+}
+function prevTimeline(){
+  config.stepIndex = (config.stepIndex-1+timeline.length)%timeline.length;
+  const s = timeline[config.stepIndex];
+  setScene(s.param,s.state,s.view);
+}
+function play(){
+  clearInterval(config.timer);
+  config.playing = true;
+  document.getElementById('playBtn').textContent='▶ Reproduciendo...';
+  config.timer = setInterval(nextTimeline, 2200 / config.speed);
+}
+function pause(){
+  config.playing = false;
+  clearInterval(config.timer);
+  document.getElementById('playBtn').textContent='▶ Reproducir';
+}
+
+document.getElementById('playBtn').onclick = () => {
+  if(config.playing){ pause(); }
+  else { play(); }
+};
+document.getElementById('pauseBtn').onclick = pause;
+document.getElementById('nextBtn').onclick = () => { pause(); nextTimeline(); };
+document.getElementById('prevBtn').onclick = () => { pause(); prevTimeline(); };
+
+document.getElementById('speed').oninput = (e) => {
+  config.speed = parseFloat(e.target.value);
+  els.speedTag.textContent = config.speed.toFixed(1)+'x';
+  if(config.playing) play();
+};
+
+document.querySelectorAll('#paramSeg button').forEach(btn => {
+  btn.onclick = () => {
+    pause();
+    config.param = btn.dataset.param;
+    config.state = 'zero';
+    config.view = config.param==='camber' ? 'front' : config.param==='caster' ? 'side' : 'top';
+    render();
+  };
+});
+document.querySelectorAll('#stateSeg button').forEach(btn => {
+  btn.onclick = () => {
+    pause();
+    config.state = btn.dataset.state;
+    render();
+  };
+});
+document.querySelectorAll('#viewSeg button').forEach(btn => {
+  btn.onclick = () => {
+    pause();
+    config.view = btn.dataset.view;
+    render();
+  };
+});
+
+document.addEventListener('keydown', e => {
+  if(e.key === 'ArrowRight'){ pause(); nextTimeline(); }
+  if(e.key === 'ArrowLeft'){ pause(); prevTimeline(); }
+  if(e.key === ' '){ e.preventDefault(); config.playing ? pause() : play(); }
+});
+
+timeline.forEach((s,i) => {
+  const d = document.createElement('div');
+  d.className='step';
+  d.innerHTML = `${i+1}. ${prettyParam(s.param)}<br>${capitalize(s.state)}`;
+  d.onclick = () => { pause(); setScene(s.param,s.state,s.view); };
+  document.getElementById('timeline').appendChild(d);
+});
+
+const hoverMap = {
+  bushingU1:'Buje (Bushing): elemento elástico que aísla vibración y permite pequeña articulación entre el brazo y el chasis.',
+  bushingL1:'Buje (Bushing): absorbe parte de las vibraciones y soporta cargas del brazo inferior.',
+  uca:'Brazo de control superior (Upper Control Arm): guía el movimiento de la parte superior de la mangueta y ayuda a controlar la geometría.',
+  lca:'Brazo de control inferior (Lower Control Arm): soporta gran parte de la carga y define la posición inferior del conjunto rueda–mangueta.',
+  spring:'Muelle / Coil Spring: soporta peso del vehículo y permite el recorrido elástico de la suspensión.',
+  shock:'Amortiguador / Shock Absorber: controla la velocidad de compresión y extensión del resorte.',
+  sway:'Barra estabilizadora / Sway Bar: reduce el balanceo uniendo movimientos entre ambos lados del eje.',
+  rack:'Cremallera de dirección / Steering Rack: transforma el giro del volante en desplazamiento lateral.',
+  tierod:'Bieleta / Tie Rod: transmite el movimiento de la cremallera hasta la mangueta y ajusta toe.',
+  bjUpper:'Rótula superior / Upper Ball Joint: articulación esférica que permite movimiento angular.',
+  bjLower:'Rótula inferior / Lower Ball Joint: punto de pivote inferior del conjunto de dirección/suspensión.',
+  knuckle:'Mangueta / Steering Knuckle: pieza central que conecta rueda, rótulas y dirección.',
+  wheelOuter:'Rueda y neumático / Wheel & Tire: elemento de contacto con el suelo. Su geometría refleja camber y toe.',
+  patch:'Parche de contacto: zona del neumático que apoya sobre el piso y cambia según la alineación.'
+};
+
+Object.entries(hoverMap).forEach(([id,text])=>{
+  const el = document.getElementById(id);
+  if(el){
+    el.addEventListener('mouseenter', ()=> els.hoverInfo.innerHTML = '<b>'+text.split(':')[0]+':</b> '+text.split(':').slice(1).join(':'));
+    el.addEventListener('mouseleave', ()=> els.hoverInfo.innerHTML = '<b>Consejo:</b> pasa el cursor sobre una pieza para ver su nombre técnico en español e inglés.');
+  }
+});
+
+document.getElementById('fullBtn').onclick = () => {
+  if(!document.fullscreenElement) document.documentElement.requestFullscreen?.();
+  else document.exitFullscreen?.();
+};
+document.getElementById('teacherBtn').onclick = () => {
+  alert('Uso sugerido: 1) inicia con Camber–Cero. 2) alterna a Positivo y Negativo para comparar apoyo del neumático. 3) pasa a Caster para discutir autocentrado. 4) finaliza con Toe para explicar convergencia/divergencia y desgaste tipo feathering. Puedes grabar pantalla en 1080p para exportar a video HD.');
+};
+
+setScene('camber','zero','isometric');
+</script>
+</body>
+</html>
